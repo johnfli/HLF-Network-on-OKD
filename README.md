@@ -4,6 +4,7 @@ The open-source distributed ledger solution, [Hyper Ledger Fabric](https://githu
 
 ## Repo Contents Description
 
+```
 .
 └── k8s
     ├── bins [dir] -- directory containing all the necessary HLF binary scripts   
@@ -28,6 +29,7 @@ The open-source distributed ledger solution, [Hyper Ledger Fabric](https://githu
     |       └── budget-peer.svc.yaml -- to deploy a service for the budget-peer pod
     ├── clean-all.sh -- to clean the config files
     └── init-setup.sh -- to create the files inside config directory
+```
 
 ## Prerequisites 
 
