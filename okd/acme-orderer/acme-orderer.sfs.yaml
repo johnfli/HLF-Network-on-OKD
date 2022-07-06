@@ -1,0 +1,50 @@
+# YAML for launching the orderer
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: acme-orderer
+  namespace: gatekeeper-dev
+  labels:
+    app: acme-orderer
+spec:
+  serviceName: orderer
+  # Single instance of the Orderer Pod is needed
+  replicas: 1
+  selector:
+    matchLabels:
+      app: acme-orderer
+  template:
+    metadata:
+      labels:
+        app: acme-orderer
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: acme-orderer
+
+          # Image used
+          image: "registry.hub.docker.com/johnfli/k8s-hlf-acme-orderer:1.0"
+
+          # Uncomment the following during development/testing of the image
+          # imagePullPolicy: Always
+          env:
+            # Points to the orderer.yaml
+            - name: FABRIC_CFG_PATH
+              value: /var/hyperledger/config
+            # Level of logging
+            - name: FABRIC_LOGGING_SPEC
+              value: INFO
+          volumeMounts:
+            # This is pointing to the PVC
+            - name: orderer-ledger
+              mountPath: /var/ledger
+  volumeClaimTemplates:
+    - metadata:
+        name: orderer-ledger
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: ovirt-csi-sc
+        resources:
+          requests:
+            storage: 1Gi

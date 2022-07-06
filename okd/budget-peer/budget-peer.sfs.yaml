@@ -1,0 +1,57 @@
+# YAML for launching the orderer
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: budget-peer
+  namespace: gatekeeper-dev
+  labels:
+    app: budget-peer
+spec:
+  serviceName: budget-peer
+  replicas: 1
+  selector:
+    matchLabels:
+      app: budget-peer
+  template:
+    metadata:
+      labels:
+        app: budget-peer
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: budget-peer
+          # image used
+          image: "registry.hub.docker.com/johnfli/k8s-hlf-budget-peer:1.0"
+          # Uncomment the following during development/testing of the image
+          # imagePullPolicy: Always
+          env:
+            - name: FABRIC_CFG_PATH
+              value: /var/hyperledger/config
+            - name: FABRIC_LOGGING_SPEC
+              value: INFO
+            - name: ORDERER_ADDRESS
+              value: acme-orderer:30750
+            - name: ORG_CONTEXT
+              value: budget
+            - name: CORE_PEER_ADDRESS
+              value: budget-peer:30851
+              # value: localhost:30851
+          volumeMounts:
+            - name: budget-peer-ledger
+              mountPath: /var/ledger
+      #   - name: dockersock
+      #     mountPath: /var/run/docker.sock
+      # volumes:
+      # - name: dockersock
+      #   hostPath:
+      #     path: /var/run/docker.sock
+  volumeClaimTemplates:
+    - metadata:
+        name: budget-peer-ledger
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: ovirt-csi-sc
+        resources:
+          requests:
+            storage: 1Gi

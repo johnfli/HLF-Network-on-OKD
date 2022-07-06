@@ -1,0 +1,18 @@
+# Expose the port 7050 as ClusterIP
+apiVersion: v1
+kind: Service
+metadata:
+  name: acme-orderer
+  namespace: gatekeeper-dev
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: acme-orderer
+
+  ports:
+    - name: acme-orderer
+      port: 30750
+
+  type: ClusterIP

@@ -1,0 +1,20 @@
+# Expose the port 30851 as ClusterIP
+apiVersion: v1
+kind: Service
+metadata:
+  name: budget-peer
+  namespace: gatekeeper-dev
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: budget-peer
+
+  ports:
+    - name: budget-peer
+      port: 30851
+    - name: budget-peer-cc
+      port: 30852
+
+  type: ClusterIP

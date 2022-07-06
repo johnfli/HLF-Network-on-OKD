@@ -1,0 +1,66 @@
+# YAML for launching the orderer
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: acme-peer
+  namespace: gatekeeper-dev
+  labels:
+    app: acme-peer
+spec:
+  serviceName: acme-peer
+  replicas: 1
+  selector:
+    matchLabels:
+      app: acme-peer
+  template:
+    metadata:
+      labels:
+        app: acme-peer
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: acme-peer
+          # Image used
+          image: "registry.hub.docker.com/johnfli/k8s-hlf-acme-peer:1.0"
+          # Uncomment the following during development/testing of the image
+          # imagePullPolicy: Always
+          env:
+            - name: FABRIC_CFG_PATH
+              value: /var/hyperledger/config
+            - name: FABRIC_LOGGING_SPEC
+              value: INFO
+            - name: ORDERER_ADDRESS
+              value: acme-orderer:30750
+            - name: ORG_CONTEXT
+              value: acme
+            - name: CORE_PEER_ADDRESS
+              value: acme-peer:30751
+              # value: localhost:30751
+            # Replacement for set-context in alpine
+            # - name: MSP_ID
+            #   value: AcmeMSP
+            # - name: ORG_NAME
+            #   value: AcmeMSP
+            # - name: CORE_PEER_MSPCONFIGPATH
+            #   value:  /var/hyperledger/config/users/Admin@acme.com/msp
+          volumeMounts:
+            - name: acme-peer-pvc
+              mountPath: /var/ledger
+            - name: acme-peer-pvc
+              mountPath: /var/hyperledger
+      #   - name: dockersock
+      #     mountPath: /var/run/docker.sock
+      # volumes:
+      # - name: dockersock
+      #   hostPath:
+      #     path: /var/run/docker.sock
+  volumeClaimTemplates:
+    - metadata:
+        name: acme-peer-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: ovirt-csi-sc
+        resources:
+          requests:
+            storage: 1Gi
