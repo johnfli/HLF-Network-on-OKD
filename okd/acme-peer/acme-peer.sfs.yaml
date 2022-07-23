@@ -44,10 +44,8 @@ spec:
             # - name: CORE_PEER_MSPCONFIGPATH
             #   value:  /var/hyperledger/config/users/Admin@acme.com/msp
           volumeMounts:
-            - name: acme-peer-pvc
+            - name: acme-peer-ledger
               mountPath: /var/ledger
-            - name: acme-peer-pvc
-              mountPath: /var/hyperledger
       #   - name: dockersock
       #     mountPath: /var/run/docker.sock
       # volumes:
@@ -56,7 +54,7 @@ spec:
       #     path: /var/run/docker.sock
   volumeClaimTemplates:
     - metadata:
-        name: acme-peer-pvc
+        name: acme-peer-ledger
       spec:
         accessModes:
           - ReadWriteOnce
